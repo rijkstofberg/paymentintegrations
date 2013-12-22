@@ -1,7 +1,7 @@
 import sys
 from cmd import Cmd
 
-from pyramidpayment.processors import PayUProcessor
+from paymentintegrations.processors import PayUProcessor
 
 
 class PayUCLI(Cmd):
