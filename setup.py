@@ -48,7 +48,6 @@ setup(name='paymentintegrations',
       version=version,
       description="Python payment integration examples and demos",
       long_description=README + '\n\n' + CHANGES,
-      classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
         "Programming Language :: Python",
         "Topic :: Internet :: WWW/HTTP",
