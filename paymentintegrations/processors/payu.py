@@ -205,11 +205,9 @@ class PayUProcessor(object):
         )
         try:
             setTransaction = self.client.service.setTransaction(**transaction)
-            import pdb;pdb.set_trace()
-            return 1, None
         except Exception, e:
             print_exc()
-            return 0, self.client.messages
+        return setTransaction[0], setTransaction[1]
     
     def getTransaction(self):
         """
