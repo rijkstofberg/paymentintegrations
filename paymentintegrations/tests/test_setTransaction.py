@@ -15,7 +15,6 @@ WSDL_URL = 'https://staging.payu.co.za/service/PayUAPI?wsdl'
 class TestsetTransaction(unittest.TestCase):
     
     def test_advanced_RPP_setTransaction(self):
-        import pdb;pdb.set_trace()
         file_path = os.path.join(XML_PATH, 'xml', 'set_transaction_advanced_redirect_page.xml')
         xml_file = open(file_path, 'rb')
         xml_template = xml_file.read()
