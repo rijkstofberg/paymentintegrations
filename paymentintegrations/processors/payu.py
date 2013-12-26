@@ -36,19 +36,20 @@ from suds.wsse import UsernameToken, Security
 import logging
 
 
-WSDL_URL =   'https://staging.payu.co.za/service/PayUAPI?wsdl'
+WSDL_URL     = 'https://staging.payu.co.za/service/PayUAPI?wsdl'
 SOAP_ENC_URI = 'http://www.w3.org/2003/05/soap-encoding'
 
 OASIS_BASE = 'http://docs.oasis-open.org/wss/2004/01/'
-WSU_URI  =    OASIS_BASE + 'oasis-200401-wss-wssecurity-utility-1.0.xsd'
-WSU_UN_URI =  OASIS_BASE + 'oasis-200401-wss-username-token-profile-1.0#PasswordText'
+WSU_URI    =  OASIS_BASE + 'oasis-200401-wss-wssecurity-utility-1.0.xsd'
+WSU_UN_URI =  OASIS_BASE + \
+              'oasis-200401-wss-username-token-profile-1.0#PasswordText'
 WSSE_URI   =  OASIS_BASE + 'oasis-200401-wss-wssecurity-secext-1.0.xsd'
 SOAP_ENC_URI = 'http://www.w3.org/2003/05/soap-encoding'
 
-WSSE_NS    = ('wsse', WSSE_URI)
-WSSE_XMLNS = ('xmlns:wsse', WSSE_URI)
-WSU_NS  = ('wsu', WSU_URI)
-WSU_XMLNS  = ('xmlns:wsu', WSU_URI)
+WSSE_NS     = ('wsse', WSSE_URI)
+WSSE_XMLNS  = ('xmlns:wsse', WSSE_URI)
+WSU_NS      = ('wsu', WSU_URI)
+WSU_XMLNS   = ('xmlns:wsu', WSU_URI)
 SOAP_ENC_NS = ('SOAP-ENC', SOAP_ENC_URI)
 
 
@@ -64,14 +65,14 @@ class PayU_Security(Security):
     @ivar keys: A list of encryption keys.
     @type keys: TBD
     """
-    
+
     def __init__(self):
         """
         """
         Security.__init__(self)
         self.mustUnderstand = 1
         self.nsprefixes = {}
-        
+
     def addPrefix(self, p, u):
         """
         Add or update a prefix mapping.
@@ -122,7 +123,7 @@ class PayU_UsernameToken(UsernameToken):
         """
         UsernameToken.__init__(self, username, password)
         self.nsprefixes = {}
-        
+
     def addPrefix(self, p, u):
         """
         Add or update a prefix mapping.
@@ -143,9 +144,9 @@ class PayU_UsernameToken(UsernameToken):
         @rtype: L{Element}
         """
         root = Element('UsernameToken', ns=WSSE_NS)
-        for p,u in self.nsprefixes.items():
+        for p, u in self.nsprefixes.items():
             root.addPrefix(p, u)
-        root.append(Attribute('wsu:Id','UsernameToken-9'))
+        root.append(Attribute('wsu:Id', 'UsernameToken-9'))
         root.append(Attribute('xmlns:wsu', WSU_URI))
 
         u = Element('Username', ns=WSSE_NS)
@@ -208,7 +209,7 @@ class PayUProcessor(object):
         except Exception, e:
             print_exc()
         return setTransaction[0], setTransaction[1]
-    
+
     def getTransaction(self):
         """
         """
@@ -228,7 +229,7 @@ class PayUProcessor(object):
         """
         """
         return 'ONE_ZERO'
-    
+
     def safekey(self):
         """
         """
@@ -238,17 +239,17 @@ class PayUProcessor(object):
         """
         """
         return self.details['transactionType']
-    
+
     def additionalInformation(self):
         """
         """
         return self.details['additionalInformation']
-    
+
     def basket(self):
         """
         """
         return self.details['basket']
-    
+
     def customer(self):
         """
         """
@@ -288,22 +289,22 @@ class PayUProcessor(object):
         """
         """
         return self.details['additionalInformation']['supportedPaymentMethods']
-    
+
     def client_log_lvl(self):
         """
         """
         return self.details.get('client_log_lvl', )
-    
+
     def transport_log_lvl(self):
         """
         """
         return self.details.get('transport_log_lvl', )
-    
+
     def schema_log_lvl(self):
         """
         """
         return self.details.get('schema_log_lvl', )
-    
+
     def wsdl_log_lvl(self):
         """
         """
@@ -322,7 +323,7 @@ class PayUProcessor(object):
         passwordElement.append(Attribute('Type', WSU_UN_URI))
 
         userCreds = Element('UsernameToken', ns=WSSE_NS)
-        userCreds.append(Attribute('wsu:Id','UsernameToken-9'))
+        userCreds.append(Attribute('wsu:Id', 'UsernameToken-9'))
         userCreds.append(Attribute('xmlns:wsu', WSSE_URI))
         userCreds.insert(usernameElement)
         userCreds.insert(passwordElement)
@@ -333,7 +334,7 @@ class PayUProcessor(object):
         security.append(Attribute('xmlns:wsse', WSSE_URI))
         security.insert(userCreds)
         return security
-    
+
     def _setTransaction(self):
         """ Alternative method for building the actual SetTransaction SOAP
             message object.  This method is *not* to be used as it introduces
@@ -350,11 +351,13 @@ class PayUProcessor(object):
         set_transaction.Basket.amountInCents = '100'
         set_transaction.Basket.currencyCode = 'ZAR'
 
-        set_transaction.AdditionalInformation.merchantReference = self.merchantReference()
+        set_transaction.AdditionalInformation.merchantReference = \
+            self.merchantReference()
         set_transaction.AdditionalInformation.demoMode = self.demoMode()
         set_transaction.AdditionalInformation.returnUrl = self.returnUrl()
         set_transaction.AdditionalInformation.cancelUrl = self.cancelUrl()
-        set_transaction.AdditionalInformation.supportedPaymentMethods = 'CREDITCARD'
+        set_transaction.AdditionalInformation.supportedPaymentMethods = \
+            'CREDITCARD'
 
         set_transaction.Customer.merchantUserId = "7"
         set_transaction.Customer.email = "john@doe.com"
