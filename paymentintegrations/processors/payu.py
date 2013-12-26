@@ -55,7 +55,10 @@ SOAP_ENC_NS = ('SOAP-ENC', SOAP_ENC_URI)
 
 class PayU_Security(Security):
     """
-    WS-Security object.
+    Custom WS-Security object.
+    I added namespace updating in order to have all the namespaces that PayU
+    require.
+
     @ivar tokens: A list of security tokens
     @type tokens: [L{Token},...]
     @ivar signatures: A list of signatures.
@@ -67,8 +70,6 @@ class PayU_Security(Security):
     """
 
     def __init__(self):
-        """
-        """
         Security.__init__(self)
         self.mustUnderstand = 1
         self.nsprefixes = {}
@@ -104,6 +105,9 @@ class PayU_Security(Security):
 class PayU_UsernameToken(UsernameToken):
     """
     Represents a basic I{UsernameToken} WS-Secuirty token.
+    I added namespace updating in order to have all the namespaces that PayU
+    require.
+
     @ivar username: A username.
     @type username: str
     @ivar password: A password.
@@ -168,12 +172,11 @@ class PayU_UsernameToken(UsernameToken):
 
 
 class PayUProcessor(object):
-    """
+    """ A very basic PayU processor. At the moment it can only to a payment via
+        a setTransaction call.
     """
 
     def __init__(self, details):
-        """
-        """
         self.details = details
         # setup the client to return a tuple instead of a WebFault instance
         self.client = Client(WSDL_URL, faults=False)
@@ -185,7 +188,8 @@ class PayUProcessor(object):
         logging.getLogger('suds.wsdl').setLevel(self.wsdl_log_lvl())
 
     def build_security_header(self, username, password):
-        """
+        """ Add the required custom security tokens in order to speak to the 
+            PayU SOAP services.
         """
         security = PayU_Security()
         security.addPrefix(p='SOAP-ENC', u=SOAP_ENC_URI)
@@ -194,7 +198,8 @@ class PayUProcessor(object):
         return security
 
     def setTransaction(self):
-        """
+        """ Configure and call the setTransaction SOAP service. This is the
+            basics of doing a payment through PayU.
         """
         transaction = dict(
             Api = self.api(),
@@ -211,102 +216,103 @@ class PayUProcessor(object):
         return setTransaction[0], setTransaction[1]
 
     def getTransaction(self):
-        """
+        """ Not implemented yet.
         """
         return 1, None
 
     def username(self):
-        """
+        """ Utility method to find the username
         """
         return self.details['username']
 
     def password(self):
-        """
+        """ Utility method to find the password.
         """
         return self.details['password']
 
     def api(self):
-        """
+        """ Utility method to find the API version
         """
         return 'ONE_ZERO'
 
     def safekey(self):
-        """
+        """ Utility method to find the safekey for authentication
         """
         return self.details['safekey']
 
     def transactionType(self):
-        """
+        """ Utility method to find the transaction type
         """
         return self.details['transactionType']
 
     def additionalInformation(self):
-        """
+        """ Utility method to find addition information that will eventually
+            find its way into the transaction data itself.
         """
         return self.details['additionalInformation']
 
     def basket(self):
-        """
+        """ Utility method to find the basket details
         """
         return self.details['basket']
 
     def customer(self):
-        """
+        """ Utility method to find the customer
         """
         return self.details['customer']
 
     def cancelUrl(self):
-        """
+        """ Utility method to find the cancelUrl for the PayU call-back
         """
         return self.details['additionalInformation']['cancelUrl']
 
     def demoMode(self):
-        """
+        """ Utility method to find the if this is a 'demo' setup.
         """
         return True
 
     def merchantReference(self):
-        """
+        """ Utility method to find the merchant's own reference.
         """
         return self.details['additionalInformation']['merchantReference']
 
     def returnUrl(self):
-        """
+        """ Utility method to find the returnURL used by the PayU call-backs.
         """
         return self.details['additionalInformation']['returnUrl']
 
     def secure3d(self):
-        """
+        """ Utility method to find the secure3D setting
         """
         return False
 
     def showBudget(self):
-        """
+        """ Utility method to decide if the 'budget' option should be shown.
         """
         return False
 
     def supportedPaymentMethods(self):
-        """
+        """ Utility method to find the current supported payment methods.
         """
         return self.details['additionalInformation']['supportedPaymentMethods']
 
     def client_log_lvl(self):
-        """
+        """ Utility method to find the client log level
         """
         return self.details.get('client_log_lvl', )
 
     def transport_log_lvl(self):
-        """
+        """ Utility method to find the transport log level
         """
         return self.details.get('transport_log_lvl', )
 
     def schema_log_lvl(self):
-        """
+        """ Utility method to find the schema log level
         """
         return self.details.get('schema_log_lvl', )
 
     def wsdl_log_lvl(self):
-        """
+        """ Utility method to find the wsdl log level
         """
         return self.details.get('wsdl_log_lvl', )
 
